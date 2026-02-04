@@ -2,25 +2,34 @@ pipeline {
     agent any
     stages {
         stage('Checkout') {
-            steps { echo 'Checking out code...' }
+            steps {
+                // Task 15.1: Git commit triggers Jenkins build [cite: 130]
+                echo 'Pulling latest code from GitHub...'
+                checkout scm
+            }
         }
-        stage('Build') {
-            steps { echo 'Building...' }
+        stage('Compile') {
+            steps {
+                // Task 15.2: Compile code [cite: 131]
+                echo 'Compiling Java code...'
+                bat 'javac Hello.java' // Use 'sh' if on Linux
+            }
         }
-        stage('Test') {
-            steps { echo 'Testing...' }
+        stage('Archive') {
+            steps {
+                // Task 15.3: Archive artifacts [cite: 132]
+                echo 'Archiving build artifacts...'
+                archiveArtifacts artifacts: 'Hello.class', fingerprint: true
+            }
         }
     }
-    // Task 12: Post-build actions section
     post {
-        success {
-            echo 'SUCCESS: The build and tests finished perfectly!'
-        }
+        // Task 15.4: Fail build on error 
         failure {
-            echo 'FAILURE: Something went wrong in the pipeline.'
+            echo 'CI Build Failed! Please check the code for errors.'
         }
-        always {
-            echo 'The pipeline execution is now complete.'
+        success {
+            echo 'CI Build Successful! Artifacts are ready.'
         }
     }
 }
